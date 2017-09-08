@@ -1,8 +1,9 @@
-﻿// Copyright (c) .NET Foundation. All rights reserved.
+// Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -11,6 +12,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NuGet.Common;
+using NuGet.Protocol.Core.Types;
 using NuGet.Versioning;
 
 namespace NuGet.Protocol
@@ -30,52 +32,74 @@ namespace NuGet.Protocol
             ILogger log,
             CancellationToken token)
         {
-            var index = await httpSource.GetJObjectAsync(
-                new HttpSourceRequest(registrationUri, log)
-                {
-                    IgnoreNotFounds = true
-                },
-                log,
-                token);
-
-            if (index == null)
+            using (var sourecCacheContext = new SourceCacheContext())
             {
-                // The server returned a 404, the package does not exist
-                return Enumerable.Empty<JObject>();
-            }
+                var httpSourceCacheContext = HttpSourceCacheContext.Create(sourecCacheContext, 0);
 
-            IList<Task<JObject>> rangeTasks = new List<Task<JObject>>();
+                var parts = registrationUri.OriginalString.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+                var packageId = parts[parts.Length - 2];
 
-            foreach (JObject item in index["items"])
-            {
-                var lower = NuGetVersion.Parse(item["lower"].ToString());
-                var upper = NuGetVersion.Parse(item["upper"].ToString());
+                var index = await httpSource.GetAsync(
+                    new HttpSourceCachedRequest(
+                        registrationUri.OriginalString,
+                        $"list_{packageId}_index",
+                        httpSourceCacheContext)
+                    {
+                        IgnoreNotFounds = true,
+                    },
+                    async httpSourceResult =>
+                    {
+                        return await httpSourceResult.Stream.AsJObjectAsync();
+                    },
+                    log,
+                    token);
 
-                if (IsItemRangeRequired(range, lower, upper))
+                if (index == null)
                 {
-                    JToken items;
-                    if (!item.TryGetValue("items", out items))
-                    {
-                        var rangeUri = item["@id"].ToObject<Uri>();
+                    // The server returned a 404, the package does not exist
+                    return Enumerable.Empty<JObject>();
+                }
 
-                        rangeTasks.Add(httpSource.GetJObjectAsync(
-                            new HttpSourceRequest(rangeUri, log)
-                            {
-                                IgnoreNotFounds = true
-                            },
-                            log,
-                            token));
-                    }
-                    else
+                IList<Task<JObject>> rangeTasks = new List<Task<JObject>>();
+
+                foreach (JObject item in index["items"])
+                {
+                    var lower = NuGetVersion.Parse(item["lower"].ToString());
+                    var upper = NuGetVersion.Parse(item["upper"].ToString());
+
+                    if (IsItemRangeRequired(range, lower, upper))
                     {
-                        rangeTasks.Add(Task.FromResult(item));
+                        JToken items;
+                        if (!item.TryGetValue("items", out items))
+                        {
+                            var rangeUri = item["@id"].ToString();
+
+                            rangeTasks.Add(httpSource.GetAsync(
+                                new HttpSourceCachedRequest(
+                                    rangeUri,
+                                    $"list_{packageId}_range_{lower.ToNormalizedString()}-{upper.ToNormalizedString()}",
+                                    httpSourceCacheContext)
+                                {
+                                    IgnoreNotFounds = true,
+                                },
+                                async httpSourceResult =>
+                                {
+                                    return await httpSourceResult.Stream.AsJObjectAsync();
+                                },
+                                log,
+                                token));
+                        }
+                        else
+                        {
+                            rangeTasks.Add(Task.FromResult(item));
+                        }
                     }
                 }
+
+                await Task.WhenAll(rangeTasks.ToArray());
+
+                return rangeTasks.Select((t) => t.Result);
             }
-
-            await Task.WhenAll(rangeTasks.ToArray());
-
-            return rangeTasks.Select((t) => t.Result);
         }
 
         private static bool IsItemRangeRequired(VersionRange dependencyRange, NuGetVersion catalogItemLower, NuGetVersion catalogItemUpper)
