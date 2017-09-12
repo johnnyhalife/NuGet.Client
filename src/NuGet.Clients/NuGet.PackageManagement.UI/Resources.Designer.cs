@@ -907,6 +907,42 @@ namespace NuGet.PackageManagement.UI {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to (dependency of {0}).
+        /// </summary>
+        public static string NuGetUpgrade_PackageDependencyOf {
+            get {
+                return ResourceManager.GetString("NuGetUpgrade_PackageDependencyOf", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Installing required packages as package references.
+        /// </summary>
+        public static string NuGetUpgrade_Progress_Installing {
+            get {
+                return ResourceManager.GetString("NuGetUpgrade_Progress_Installing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Uninstalling packages from packages.config.
+        /// </summary>
+        public static string NuGetUpgrade_Progress_Uninstalling {
+            get {
+                return ResourceManager.GetString("NuGetUpgrade_Progress_Uninstalling", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Upgrading Project.
+        /// </summary>
+        public static string NuGetUpgrade_WaitMessage {
+            get {
+                return ResourceManager.GetString("NuGetUpgrade_WaitMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Time Elapsed: {0}.
         /// </summary>
         public static string Operation_TotalTime {

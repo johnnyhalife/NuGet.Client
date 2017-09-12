@@ -684,4 +684,16 @@ Please see https://aka.ms/troubleshoot_nuget_cache for more help.</value>
   <data name="RefreshButtonLabel" xml:space="preserve">
     <value>Refresh</value>
   </data>
+  <data name="NuGetUpgrade_Progress_Installing" xml:space="preserve">
+    <value>Installing required packages as package references</value>
+  </data>
+  <data name="NuGetUpgrade_Progress_Uninstalling" xml:space="preserve">
+    <value>Uninstalling packages from packages.config</value>
+  </data>
+  <data name="NuGetUpgrade_WaitMessage" xml:space="preserve">
+    <value>Upgrading Project</value>
+  </data>
+  <data name="NuGetUpgrade_PackageDependencyOf" xml:space="preserve">
+    <value>(dependency of {0})</value>
+  </data>
 </root>
