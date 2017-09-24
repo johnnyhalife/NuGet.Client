@@ -4,7 +4,10 @@ using System.Text;
 
 namespace NuGet.Packaging.Signing
 {
-    public class SignVerifySummary
+    /// <summary>
+    /// Collection of signature verification results.
+    /// </summary>
+    public class VerifySignaturesResult
     {
         public bool Valid { get; set; }
 

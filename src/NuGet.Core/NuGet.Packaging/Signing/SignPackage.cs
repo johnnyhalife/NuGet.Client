@@ -3,15 +3,25 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.IO.Compression;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using NuGet.Common;
+using NuGet.Packaging.Core;
 
 namespace NuGet.Packaging.Signing
 {
-    public class SignPackage
+    public class SignPackage : IDisposable
     {
+        private readonly IPackageCoreWriter _package;
+
+        public SignPackage(IPackageCoreWriter package)
+        {
+            _package = package;
+        }
+
         public Task AddSignatureAsync(Signature signature, ILogger logger, CancellationToken token)
         {
             throw new NotImplementedException();
@@ -47,9 +57,19 @@ namespace NuGet.Packaging.Signing
             throw new NotImplementedException();
         }
 
-        public Task<SignVerifySummary> VerifySignaturesAsync(ILogger logger, CancellationToken token)
+        public Task<SignManifest> CreateManifestAsync(ILogger logger, CancellationToken token)
         {
             throw new NotImplementedException();
+        }
+
+        public Task<bool> IsSignedAsync(ILogger logger, CancellationToken token)
+        {
+            return Task.FromResult(GetSignManifestAsync(logger, token) != null);
+        }
+
+        public void Dispose()
+        {
+            _package.Dispose();
         }
     }
 }
