@@ -9,6 +9,8 @@ namespace NuGet.Packaging.Signing
 {
     public class Signature
     {
-        public string DisplayName { get; }
+        public SignatureType Type { get; set; }
+
+        public string DisplayName { get; set; }
     }
 }
