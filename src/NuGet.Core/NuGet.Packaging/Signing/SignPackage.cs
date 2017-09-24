@@ -13,7 +13,7 @@ using NuGet.Packaging.Core;
 
 namespace NuGet.Packaging.Signing
 {
-    public class SignPackage : IDisposable
+    public class SignPackage : ISignPackageWriter
     {
         private readonly IPackageCoreWriter _package;
 
@@ -22,32 +22,12 @@ namespace NuGet.Packaging.Signing
             _package = package;
         }
 
-        public Task AddSignatureAsync(Signature signature, ILogger logger, CancellationToken token)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task RemoveSignatureAsync(Signature signature, ILogger logger, CancellationToken token)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task RemoveSignaturesAsync(ILogger logger, CancellationToken token)
-        {
-            throw new NotImplementedException();
-        }
-
         public Task<IReadOnlyList<Signature>> GetSignaturesAsync(ILogger logger, CancellationToken token)
         {
             throw new NotImplementedException();
         }
 
-        public Task AddSignManifestAsync(ILogger logger, CancellationToken token)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task AddSignManifestAsync(SignManifest signManifest, ILogger logger, CancellationToken token)
+        public Task AddSignatureAsync(Signature signature, ILogger logger, CancellationToken token)
         {
             throw new NotImplementedException();
         }
