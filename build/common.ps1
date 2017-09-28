@@ -189,6 +189,13 @@ Function Install-NuGet {
     & $NuGetExe locals all -list -verbosity detailed
 }
 
+Function Add-ApexFeed {
+    if (Test-Path $NuGetExe) {    
+        # Add Apex VSTS feed
+        & $NuGetExe sources add -Name ApexFeed -Source $env:VstsPackageFeedUrl -UserName $env:VstsPackageFeedUsername -Password $env:VstsPackageFeedPassword
+    }
+}
+
 Function Install-DotnetCLI {
     [CmdletBinding()]
     param(
