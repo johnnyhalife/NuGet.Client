@@ -54,7 +54,7 @@ Invoke-BuildStep 'Installing .NET CLI' {
     Install-DotnetCLI -Force:$Force    
 } -ev +BuildErrors
 
-if ($env:Ci) {
+if ($env:CI) {
     Invoke-BuildStep 'Adding Apex Feed' {
         Add-ApexFeed 
     } -ev +BuildErrors
