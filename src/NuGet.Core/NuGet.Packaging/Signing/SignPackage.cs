@@ -27,11 +27,6 @@ namespace NuGet.Packaging.Signing
             throw new NotImplementedException();
         }
 
-        public Task AddSignatureAsync(Signature signature, ILogger logger, CancellationToken token)
-        {
-            throw new NotImplementedException();
-        }
-
         public Task<SignManifest> GetSignManifestAsync(ILogger logger, CancellationToken token)
         {
             throw new NotImplementedException();
@@ -45,6 +40,11 @@ namespace NuGet.Packaging.Signing
         public Task<bool> IsSignedAsync(ILogger logger, CancellationToken token)
         {
             return Task.FromResult(GetSignManifestAsync(logger, token) != null);
+        }
+
+        public Task AddSignatureAsync(Signature signature, ILogger logger, CancellationToken token)
+        {
+            throw new NotImplementedException();
         }
 
         public void Dispose()
